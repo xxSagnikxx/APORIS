@@ -1,0 +1,4 @@
+Module 5 performs anomaly detection using Isolation Forest.
+It identifies abnormal states based on update behavior, service quality,
+and predicted future load.
+Outputs are used by risk scoring and decision modules.
