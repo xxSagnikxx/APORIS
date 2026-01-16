@@ -1,122 +1,109 @@
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "id": "618a1ad9",
-   "metadata": {},
-   "source": [
-    "---\n",
-    "\n",
-    "## 1. Datasets Used\n",
-    "\n",
-    "### 1.1 Aadhaar Enrolment Dataset\n",
-    "**Source:** UIDAI API - Enrolment Activity  \n",
-    "**Size:** 1,006,029 records across 55 states, 984 districts, 19,463 pincodes  \n",
-    "**Date Range:** March 2 – December 31, 2025 (304 days)  \n",
-    "**Frequency:** Daily\n",
-    "\n",
-    "**Columns:**\n",
-    "| Column | Type | Description | Example |\n",
-    "|--------|------|-------------|---------|\n",
-    "| `date` | Date | Date of enrolment activity | 2025-03-02 |\n",
-    "| `state` | String | State/UT name | Uttar Pradesh |\n",
-    "| `district` | String | District name | Kanpur Nagar |\n",
-    "| `pincode` | String (6-digit) | Postal code | 208001 |\n",
-    "| `age_0_5` | Integer | # Aadhaar enrolments, age 0–5 years | 29 |\n",
-    "| `age_5_17` | Integer | # Aadhaar enrolments, age 5–17 years | 82 |\n",
-    "| `age_18_greater` | Integer | # Aadhaar enrolments, age 18+ years | 12 |\n",
-    "\n",
-    "**Total Enrolments:** 5,435,702  \n",
-    "**Key Insight:** ~51% of enrolments are children (age 0–17), reflecting integration with school systems and birth registration.\n",
-    "\n",
-    "---\n",
-    "\n",
-    "### 1.2 Demographic Updates Dataset\n",
-    "**Source:** UIDAI API - Profile Updates (Non-Biometric)  \n",
-    "**Size:** 2,071,700 records  \n",
-    "**Date Range:** March 1 – December 29, 2025  \n",
-    "**Frequency:** Daily  \n",
-    "**Includes:** Name changes, address updates, mobile number linking, email, marital status, etc.\n",
-    "\n",
-    "**Columns:**\n",
-    "| Column | Type | Description |\n",
-    "|--------|------|-------------|\n",
-    "| `date` | Date | Date of demographic update |\n",
-    "| `state` | String | State/UT name |\n",
-    "| `district` | String | District name |\n",
-    "| `pincode` | String | Postal code |\n",
-    "| `demo_age_5_17` | Integer | # Demographic updates, age 5–17 |\n",
-    "| `demo_age_17_` | Integer | # Demographic updates, age 17+ |\n",
-    "\n",
-    "**Total Demographic Updates:** 49,295,187  \n",
-    "**Key Insight:** High demographic update intensity (Chandigarh: 30,602 per 1,000 enrolments) indicates active population mobility and KYC seeding.\n",
-    "\n",
-    "---\n",
-    "\n",
-    "### 1.3 Biometric Updates Dataset\n",
-    "**Source:** UIDAI API - Biometric Updates  \n",
-    "**Size:** 1,861,108 records  \n",
-    "**Date Range:** March 1 – December 29, 2025  \n",
-    "**Frequency:** Daily  \n",
-    "**Includes:** Fingerprint re-capture, iris scan updates, photo updates\n",
-    "\n",
-    "**Columns:**\n",
-    "| Column | Type | Description |\n",
-    "|--------|------|-------------|\n",
-    "| `date` | Date | Date of biometric update |\n",
-    "| `state` | String | State/UT name |\n",
-    "| `district` | String | District name |\n",
-    "| `pincode` | String | Postal code |\n",
-    "| `bio_age_5_17` | Integer | # Biometric updates, age 5–17 |\n",
-    "| `bio_age_17_` | Integer | # Biometric updates, age 17+ |\n",
-    "\n",
-    "**Total Biometric Updates:** 69,763,095  \n",
-    "**Key Insight:** Disproportionately high biometric updates in small UTs (Daman & Diu: 99,318 per 1,000 enrolments) suggests either small enrolment base or data quality issues.\n",
-    "\n",
-    "---\n",
-    "\n",
-    "### Data Quality Summary\n",
-    "\n",
-    "| Metric | Enrolment | Demographic | Biometric |\n",
-    "|--------|-----------|-------------|-----------|\n",
-    "| Records | 1,006,029 | 2,071,700 | 1,861,108 |\n",
-    "| Duplicates* | 2.28% | 22.86% | 5.10% |\n",
-    "| Negative Counts | 0 | 0 | 0 |\n",
-    "| Missing Dates | 0 | 0 | 0 |\n",
-    "| Geographic Coverage | 55 states, 984 districts | 65 states, 982 districts | 57 states, 973 districts |\n",
-    "\n",
-    "*Duplicates likely due to batch updates at district/state level; handled by summing in aggregation."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "29ff719b",
-   "metadata": {},
-   "source": [
-    "---\n",
-    "\n",
-    "## 2. Methodology\n",
-    "\n",
-    "### 2.1 Data Cleaning & Preprocessing\n",
-    "\n",
-    "**Step 1: Load & Concatenate**\n",
-    "- Each dataset split into multiple CSV partitions (up to 5 files per dataset)\n",
-    "- Load all partitions and concatenate vertically using pandas\n",
-    "- **Lines of code:** ~10\n",
-    "\n",
-    "**Step 2: Standardise Fields**\n",
-    "```\n",
-    "1. Date parsing: Convert \"DD-MM-YYYY\" strings to datetime objects\n",
-    "2. State/District names: Strip whitespace, standardise casing\n",
-    "3. Pincodes: Convert to 6-character strings (preserve leading zeros)\n",
-    "```\n",
-    "\n",
-    "**Step 3: Validate Data**\n",
-    "- Check for non-negativity of all count columns\n",
-    "- Identify missing or null values (none detected)\n",
-    "- Flag duplicated (date, state, district, pincode) combinations\n",
-    "- **Result:** Zero negative counts; 2–23% duplicates handled by aggregation\n",
-    "\n",
-    "---\n",
-    "\n",
-    }
+## 1. Datasets Used
+
+This project utilises three large-scale datasets sourced from official UIDAI APIs to analyse Aadhaar enrolment and update activity across India.
+
+---
+
+### 1.1 Aadhaar Enrolment Dataset
+
+**Source:** UIDAI API – Enrolment Activity  
+**Records:** 1,006,029  
+**Coverage:** 55 States/UTs, 984 Districts, 19,463 Pincodes  
+**Date Range:** 2 March – 31 December 2025 (304 days)  
+**Frequency:** Daily  
+
+#### Columns
+| Column | Type | Description | Example |
+|------|------|-------------|---------|
+| `date` | Date | Date of enrolment activity | 2025-03-02 |
+| `state` | String | State / UT name | Uttar Pradesh |
+| `district` | String | District name | Kanpur Nagar |
+| `pincode` | String (6-digit) | Postal PIN code | 208001 |
+| `age_0_5` | Integer | Aadhaar enrolments (ages 0–5) | 29 |
+| `age_5_17` | Integer | Aadhaar enrolments (ages 5–17) | 82 |
+| `age_18_greater` | Integer | Aadhaar enrolments (ages 18+) | 12 |
+
+**Total Enrolments:** 5,435,702  
+
+**Key Insight:**  
+Approximately **51% of enrolments correspond to children (ages 0–17)**, indicating strong linkage between Aadhaar enrolment, birth registration, and school systems.
+
+---
+
+### 1.2 Demographic Updates Dataset (Non-Biometric)
+
+**Source:** UIDAI API – Profile Updates  
+**Records:** 2,071,700  
+**Date Range:** 1 March – 29 December 2025  
+**Frequency:** Daily  
+
+**Includes:** Name changes, address updates, mobile number linking, email updates, marital status changes, and related demographic modifications.
+
+#### Columns
+| Column | Type | Description |
+|------|------|-------------|
+| `date` | Date | Date of demographic update |
+| `state` | String | State / UT name |
+| `district` | String | District name |
+| `pincode` | String | Postal PIN code |
+| `demo_age_5_17` | Integer | Demographic updates (ages 5–17) |
+| `demo_age_17_` | Integer | Demographic updates (ages 17+) |
+
+**Total Demographic Updates:** 49,295,187  
+
+**Key Insight:**  
+High demographic update intensity in certain regions (e.g., **Chandigarh: 30,602 updates per 1,000 enrolments**) reflects significant population mobility and extensive Aadhaar–KYC seeding.
+
+---
+
+### 1.3 Biometric Updates Dataset
+
+**Source:** UIDAI API – Biometric Updates  
+**Records:** 1,861,108  
+**Date Range:** 1 March – 29 December 2025  
+**Frequency:** Daily  
+
+**Includes:** Fingerprint re-capture, iris scan updates, and photograph updates.
+
+#### Columns
+| Column | Type | Description |
+|------|------|-------------|
+| `date` | Date | Date of biometric update |
+| `state` | String | State / UT name |
+| `district` | String | District name |
+| `pincode` | String | Postal PIN code |
+| `bio_age_5_17` | Integer | Biometric updates (ages 5–17) |
+| `bio_age_17_` | Integer | Biometric updates (ages 17+) |
+
+**Total Biometric Updates:** 69,763,095  
+
+**Key Insight:**  
+Exceptionally high biometric update rates in small UTs (e.g., **Daman & Diu: 99,318 updates per 1,000 enrolments**) may indicate a small enrolment base or potential data aggregation artefacts.
+
+---
+
+### Data Quality Summary
+
+| Metric | Enrolment | Demographic | Biometric |
+|------|-----------|-------------|-----------|
+| Records | 1,006,029 | 2,071,700 | 1,861,108 |
+| Duplicate Records* | 2.28% | 22.86% | 5.10% |
+| Negative Counts | 0 | 0 | 0 |
+| Missing Dates | 0 | 0 | 0 |
+| Geographic Coverage | 55 states, 984 districts | 65 states, 982 districts | 57 states, 973 districts |
+
+\*Duplicates primarily arise from batch-wise district or state-level reporting and are resolved through aggregation during analysis.
+
+---
+
+## 2. Methodology
+
+### 2.1 Data Ingestion
+- Each dataset was provided in multiple CSV partitions (up to five files per dataset).
+- All partitions were loaded and concatenated vertically using **pandas**.
+- **Approximate code length:** ~10 lines per dataset.
+
+### 2.2 Field Standardisation
+- Parsed dates into datetime format.
+- Standardised state and district names (whitespace removal, consistent casing).
+- Converted pincodes to fixed 6-character strings to preserve leading zeros.
