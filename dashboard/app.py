@@ -5,18 +5,13 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import os
 import numpy as np
-
-# ---------------- CONFIG ----------------
 st.set_page_config(
     page_title="National Identity Analytics",
     page_icon="🇮🇳",
     layout="wide",
 )
-
 if "theme" not in st.session_state:
     st.session_state.theme = "Dark"
-
-# ---------------- THEME ----------------
 THEMES = {
     "Light": {
         "bg": "#F4F6F9",
@@ -31,10 +26,7 @@ THEMES = {
         "plot": "plotly_dark"
     }
 }
-
 theme = THEMES[st.session_state.theme]
-
-# ---------------- DATA ----------------
 @st.cache_data
 def load_data():
     path = os.path.join("data", "final_dataset.csv")
@@ -42,17 +34,12 @@ def load_data():
     df["total_enrolment"] = pd.to_numeric(df["total_enrolment"], errors="coerce")
     df["districts"] = pd.to_numeric(df["districts"], errors="coerce")
     return df.dropna()
-
 df = load_data()
-
-# ---------------- SIDEBAR ----------------
 with st.sidebar:
     st.title("🏛️ Admin Portal")
     st.markdown("National Identity Analytics")
-
     dark = st.toggle("Dark Mode", st.session_state.theme == "Dark")
     st.session_state.theme = "Dark" if dark else "Light"
-
     page = st.radio(
         "Navigation",
         [
@@ -62,10 +49,7 @@ with st.sidebar:
             "Forecast & Planning"
         ]
     )
-
     st.success("Pipeline Connected")
-
-# ---------------- HELPERS ----------------
 def style(fig):
     fig.update_layout(
         template=theme["plot"],
@@ -75,18 +59,12 @@ def style(fig):
         margin=dict(t=40, l=40, r=40, b=40)
     )
     return fig
-
-# ================= PAGES =================
-
-# ---------- 1. EXECUTIVE ----------
 if page == "Executive Overview":
     st.title("Executive Dashboard")
-
     c1, c2, c3 = st.columns(3)
     c1.metric("Total Enrolment", f"{df.total_enrolment.sum():,}")
     c2.metric("States Covered", df.state.nunique())
     c3.metric("Total Districts", int(df.districts.sum()))
-
     fig = px.bar(
         df.sort_values("total_enrolment", ascending=False).head(10),
         x="state",
@@ -94,14 +72,9 @@ if page == "Executive Overview":
         title="Top 10 States by Enrolment"
     )
     st.plotly_chart(style(fig), use_container_width=True)
-
-# ---------- 2. REGION RISK ----------
 elif page == "Region-Wise Risk":
     st.title("Region-Wise Risk")
-
-    # Simple, readable risk proxy
     df["risk_score"] = df.total_enrolment / df.total_enrolment.max() * 100
-
     fig = px.bar(
         df.sort_values("risk_score"),
         x="risk_score",
@@ -109,27 +82,17 @@ elif page == "Region-Wise Risk":
         orientation="h",
         title="Relative Risk Index (Volume-Based)"
     )
-
     st.plotly_chart(style(fig), use_container_width=True)
-
-# ---------- 3. TREND ----------
-
-
 state = st.selectbox("Select State", df.state.unique())
 base = df[df.state == state].iloc[0].total_enrolment
-
 dates = pd.date_range(end=datetime.today(), periods=12, freq="ME")
-
-# realistic monthly variation
 values = []
 current = base * 0.85
-
 for i in range(12):
-    noise = np.random.normal(0, base * 0.02)     # random fluctuation
-    seasonal = base * 0.03 * np.sin(i / 2)       # seasonality
+    noise = np.random.normal(0, base * 0.02)    
+    seasonal = base * 0.03 * np.sin(i / 2)       
     current = max(current + noise + seasonal, 0)
     values.append(current)
-
 fig = px.line(
     x=dates,
     y=values,
@@ -137,25 +100,17 @@ fig = px.line(
     labels={"x": "Month", "y": "Enrolment"},
     title=f"Enrolment Trend – {state}"
 )
-
 st.plotly_chart(style(fig), use_container_width=True)
-
-
-# ---------- 4. FORECAST ----------
 months = st.slider("Months", 3, 12, 6)
 latest = df.total_enrolment.sum()
-
 dates = [datetime.today() + timedelta(days=30*i) for i in range(1, months+1)]
-
 growth_rate = 0.015
 values = []
-
 current = latest
 for i in range(months):
-    shock = np.random.normal(0, latest * 0.01)   # uncertainty
+    shock = np.random.normal(0, latest * 0.01)   
     current = current * (1 + growth_rate) + shock
     values.append(current)
-
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=dates,
@@ -163,7 +118,5 @@ fig.add_trace(go.Scatter(
     mode="lines+markers",
     name="Projected Enrolment"
 ))
-
 fig.update_layout(title="Non-Linear Enrolment Forecast")
-
 st.plotly_chart(style(fig), use_container_width=True)

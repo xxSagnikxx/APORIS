@@ -1,35 +1,24 @@
 import pandas as pd
 from prophet import Prophet
 from load_time_series import load_daily_series
-
-#enrolment trend predict korar jonne
-
 OUTPUT_PATH = "../../outputs/reports/"
-
 def forecast_enrolments(days=30):
     df = load_daily_series()
-
-    # Prophet format lagbe
     prophet_df = df[["date", "total_enrolments"]]
     prophet_df.columns = ["ds", "y"]
-
     model = Prophet(
         yearly_seasonality=True,
         weekly_seasonality=True,
         daily_seasonality=False
     )
-
     model.fit(prophet_df)
-
     future = model.make_future_dataframe(periods=days)
     forecast = model.predict(future)
-
     forecast[[
         "ds",
         "yhat",
         "yhat_lower",
         "yhat_upper"
     ]].to_csv(OUTPUT_PATH + "enrolment_forecast.csv", index=False)
-
 if __name__ == "__main__":
     forecast_enrolments(30)
