@@ -1,109 +1,121 @@
-APORIS – National Identity Analytics Dashboard
-📌 Overview
+APORIS
+National Identity Analytics Dashboard
 
-APORIS is an interactive Streamlit-based analytics dashboard designed to analyze national identity enrolment data across Indian states and districts.
-It provides executive insights, regional risk visualization, trend analysis, and forecasting for data-driven planning.
+APORIS is a Streamlit-based analytics dashboard designed to monitor, analyze, and visualize national identity enrolment data across India. The system provides executive insights, regional risk analysis, trend evaluation, and forecast-based planning through an interactive interface.
 
-🚀 Features
+Features
 
-Executive Overview
+Executive-level overview of key enrolment metrics
 
-Key KPIs: total enrolments, coverage %, pending updates
+Region-wise risk visualization across states and UTs
 
-Region-Wise Risk Analysis
+Trend and anomaly analysis with state-wise filtering
 
-State-level risk visualization based on enrolment and coverage
+Forecast and planning view for future enrolment patterns
 
-Trend & Anomaly Detection
+Light and Dark mode support
 
-Time-based enrolment trends with state-wise filtering
+Modular, scalable architecture
 
-Forecast & Planning
-
-Predictive enrolment trends for planning and capacity estimation
-
-Dark / Light Mode UI
-
-Modular Streamlit Architecture
-
-🗂 Project Structure
+Project Structure
 APORIS/
+│
 ├── dashboard/
 │   ├── app.py
 │   ├── pages/
+│   │   ├── executive_overview.py
+│   │   ├── region_wise_risk.py
+│   │   ├── trend_analysis.py
+│   │   └── forecast_planning.py
+│   │
 │   └── assets/
+│       └── styles.css
+│
 ├── data/
 │   └── final_dataset.csv
+│
 ├── requirements.txt
 ├── README.md
 └── .gitignore
 
-⚙️ Installation & Setup
-1️⃣ Clone the repository
-git clone https://github.com/your-username/APORIS.git
-cd APORIS
+Requirements
 
-2️⃣ Create a virtual environment (recommended)
-python -m venv venv
-
-
-Activate it:
-
-Windows
-
-venv\Scripts\activate
-
-
-Linux / Mac
-
-source venv/bin/activate
-
-3️⃣ Install dependencies
-pip install -r requirements.txt
-
-▶️ Running the Application
-
-From the root APORIS folder, run:
-
-streamlit run dashboard/app.py
-
-
-The app will start at:
-
-http://localhost:8501
-
-📊 Data Source
-
-data/final_dataset.csv
-
-Columns:
-
-state
-
-total_enrolment
-
-districts
-
-🛠 Tech Stack
-
-Python 3.10+
+Python 3.10 or higher
 
 Streamlit
 
 Pandas
 
-Plotly
-
 NumPy
 
-📌 Notes
+Plotly
 
-Virtual environments are not included in the repository.
+All dependencies are listed in requirements.txt.
 
-All visualizations are generated dynamically from the dataset.
+Installation
 
-Forecasting is deterministic and intended for planning simulation (not statistical prediction).
+Clone the repository:
 
-📄 License
+git clone https://github.com/<your-username>/APORIS.git
+cd APORIS
 
-This project is for academic and research use.
+
+(Optional but recommended) Create a virtual environment:
+
+Windows
+
+python -m venv venv
+venv\Scripts\activate
+
+
+Linux / macOS
+
+python -m venv venv
+source venv/bin/activate
+
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+Running the Application
+
+From the root directory of the project, run:
+
+streamlit run dashboard/app.py
+
+
+Once started, open your browser and navigate to:
+
+http://localhost:8501
+
+Dataset Description
+
+Dataset location:
+
+data/final_dataset.csv
+
+
+Columns used:
+
+state – State or Union Territory name
+
+total_enrolment – Total enrolment count
+
+districts – Number of districts covered
+
+Notes
+
+The dashboard uses processed and aggregated data.
+
+Forecast and trend visualizations are illustrative and intended for planning insights.
+
+Virtual environments are intentionally excluded from the repository.
+
+License
+
+This project is developed for academic and research purposes.
+
+Status
+
+System pipeline connected and dashboard operational.
