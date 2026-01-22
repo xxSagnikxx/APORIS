@@ -1,29 +1,19 @@
 import pandas as pd
+import os
 from clean_data import clean_all
 
-#district level feature bananor jonne
-
-OUTPUT_PATH = "../../data/features/"
+OUT_DIR = os.path.abspath(os.path.join("data", "features"))
 
 def aggregate_district_level():
-    enrol, demo, bio = clean_all()
+    enrol, _, _ = clean_all()
 
-    enrol_dist = enrol.groupby(["state", "district"]).agg(
-        total_enrolments=("enrolments", "sum")
+    df = enrol.groupby(["state", "district"]).agg(
+        total_enrolment=("total_enrolment", "sum"),
+        records=("pincode", "count")
     ).reset_index()
 
-    demo_dist = demo.groupby(["state", "district"]).agg(
-        total_updates=("updates", "sum")
-    ).reset_index()
-
-    district_features = enrol_dist.merge(
-        demo_dist, on=["state", "district"], how="left"
-    )
-
-    district_features.to_csv(
-        OUTPUT_PATH + "district_level_features.csv",
-        index=False
-    )
+    df.to_csv(os.path.join(OUT_DIR, "district_level_features.csv"), index=False)
+    print("✔ district_level_features.csv saved")
 
 if __name__ == "__main__":
     aggregate_district_level()

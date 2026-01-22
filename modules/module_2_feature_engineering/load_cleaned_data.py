@@ -1,20 +1,16 @@
 import pandas as pd
+import os
 
-#cleaned data load korar jonne
-
-DATA_PATH = "../../data/cleaned/"
+BASE_DIR = os.path.dirname(__file__)
+DATA_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, "..", "..", "modules", "module_1_data_ingestion", "clean_data")
+)
 
 def load_enrolment():
-    df = pd.read_csv(DATA_PATH + "enrolment_cleaned.csv")
-    df["date"] = pd.to_datetime(df["date"])
-    return df
+    return pd.read_csv(os.path.join(DATA_DIR, "enrolment_cleaned.csv"))
 
-def load_demographic_updates():
-    df = pd.read_csv(DATA_PATH + "demographic_updates_cleaned.csv")
-    df["date"] = pd.to_datetime(df["date"])
-    return df
+def load_demographic():
+    return pd.read_csv(os.path.join(DATA_DIR, "demographic_updates_cleaned.csv"))
 
-def load_biometric_updates():
-    df = pd.read_csv(DATA_PATH + "biometric_updates_cleaned.csv")
-    df["date"] = pd.to_datetime(df["date"])
-    return df
+def load_biometric():
+    return pd.read_csv(os.path.join(DATA_DIR, "biometric_updates_cleaned.csv"))

@@ -1,62 +1,109 @@
-# APORIS - Aadhaar Predictive Operations and Risk Intelligence System
+APORIS – National Identity Analytics Dashboard
+📌 Overview
 
-![UIDAI Hackathon 2026](https://img.shields.io/badge/UIDAI%20Hackathon-2026-003366?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Prototype%20Ready-success?style=for-the-badge)
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white&style=for-the-badge)
+APORIS is an interactive Streamlit-based analytics dashboard designed to analyze national identity enrolment data across Indian states and districts.
+It provides executive insights, regional risk visualization, trend analysis, and forecasting for data-driven planning.
 
-> **Submission for UIDAI Data Hackathon 2026** > **Theme:** Smart Governance / Fraud Detection  
-> **Problem Statement:** Unlocking Societal Trends in Aadhaar Enrolment and Updates
+🚀 Features
 
----
+Executive Overview
 
-## 📖 Overview
+Key KPIs: total enrolments, coverage %, pending updates
 
-**APORIS** is an end-to-end predictive analytics pipeline designed to monitor the health of the Aadhaar enrolment ecosystem. By moving beyond traditional reactive reporting, APORIS leverages machine learning and time-series forecasting to identify operational anomalies, predict future resource loads, and quantify risk at the state and district levels.
+Region-Wise Risk Analysis
 
-The system serves as a **Single Source of Truth** for administrators, transforming raw API logs into actionable intelligence.
+State-level risk visualization based on enrolment and coverage
 
----
+Trend & Anomaly Detection
 
-## 🚩 Problem Statement
+Time-based enrolment trends with state-wise filtering
 
-**Unlocking Societal Trends in Aadhaar Enrolment and Updates** *Identify meaningful patterns, trends, anomalies, or predictive indicators and translate them into clear insights or solution frameworks that can support informed decision-making and system improvements.*
+Forecast & Planning
 
-**The Challenge:**
-- **Data Silos:** Disconnected analysis of Enrolment vs. Update streams.
-- **Reactive Audits:** Inability to catch update fraud (e.g., non-biometric spikes) in real-time.
-- **Resource Mismatch:** Lack of forward-looking data to plan enrolment kit deployment.
+Predictive enrolment trends for planning and capacity estimation
 
----
+Dark / Light Mode UI
 
-## 🏗️ System Architecture
+Modular Streamlit Architecture
 
-The project is structured into **7 Analytical Modules** feeding into a central Dashboard:
-
-1.  **Ingestion:** Unifying Enrolment, Demographic, and Biometric datasets.
-2.  **Engineering:** Creating derived features like `update_ratio` and `future_load_pressure`.
-3.  **Analytics:** Establishing baseline demographic norms (e.g., Child vs. Adult enrolment).
-4.  **Forecasting:** Predicting future system load using **Facebook Prophet**.
-5.  **Anomaly Detection:** Flagging outliers using **Isolation Forest** (Unsupervised Learning).
-6.  **Classification:** Diagnosing the root cause of anomalies (e.g., "High Update Frequency").
-7.  **Risk Engine:** Generating a unified **Risk Score (0-100)** for every state.
-
----
-
-## 📂 Project Structure
-
-```text
+🗂 Project Structure
 APORIS/
-├── dashboard/                  # Streamlit Admin Portal
-│   └── app.py                  # Interactive Dashboard logic
-├── docs/                       # Documentation & Reports
-│   ├── main.tex                # LaTeX Source Code
-├── modules/                    # Core Analytical Pipeline
-│   ├── module_1_data_ingestion # Raw Data Processing
-│   ├── module_2_feature_eng    # Feature Extraction
-│   ├── module_3_descriptive    # Statistical Analysis
-│   ├── module_4_forecasting    # Prophet Time-Series Models
-│   ├── module_5_anomaly_det    # Isolation Forest Models
-│   ├── module_6_cause_class    # Root Cause Classifier
-│   └── module_7_risk_scoring   # Decision Support Engine
-├── data/                       # Dataset Directory (Git LFS)
-└── requirements.txt            # Python Dependencies
+├── dashboard/
+│   ├── app.py
+│   ├── pages/
+│   └── assets/
+├── data/
+│   └── final_dataset.csv
+├── requirements.txt
+├── README.md
+└── .gitignore
+
+⚙️ Installation & Setup
+1️⃣ Clone the repository
+git clone https://github.com/your-username/APORIS.git
+cd APORIS
+
+2️⃣ Create a virtual environment (recommended)
+python -m venv venv
+
+
+Activate it:
+
+Windows
+
+venv\Scripts\activate
+
+
+Linux / Mac
+
+source venv/bin/activate
+
+3️⃣ Install dependencies
+pip install -r requirements.txt
+
+▶️ Running the Application
+
+From the root APORIS folder, run:
+
+streamlit run dashboard/app.py
+
+
+The app will start at:
+
+http://localhost:8501
+
+📊 Data Source
+
+data/final_dataset.csv
+
+Columns:
+
+state
+
+total_enrolment
+
+districts
+
+🛠 Tech Stack
+
+Python 3.10+
+
+Streamlit
+
+Pandas
+
+Plotly
+
+NumPy
+
+📌 Notes
+
+Virtual environments are not included in the repository.
+
+All visualizations are generated dynamically from the dataset.
+
+Forecasting is deterministic and intended for planning simulation (not statistical prediction).
+
+📄 License
+
+This project is for academic and research use.

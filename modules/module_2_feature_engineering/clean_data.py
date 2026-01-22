@@ -1,18 +1,17 @@
-from load_cleaned_data import (
-    load_enrolment,
-    load_demographic_updates,
-    load_biometric_updates
-)
-
-#missing ar negative value handle korar jonne
+from load_cleaned_data import load_enrolment, load_demographic, load_biometric
 
 def clean_all():
     enrol = load_enrolment()
-    demo = load_demographic_updates()
-    bio = load_biometric_updates()
+    demo = load_demographic()
+    bio = load_biometric()
 
-    enrol = enrol[enrol["enrolments"] >= 0]
-    demo = demo[demo["updates"] >= 0]
-    bio = bio[bio["updates"] >= 0]
+    # standardize
+    for df in [enrol, demo, bio]:
+        df.columns = df.columns.str.lower().str.strip()
+
+    # create total enrolment column
+    enrol["total_enrolment"] = (
+        enrol["age_0_5"] + enrol["age_5_17"] + enrol["age_18_greater"]
+    )
 
     return enrol, demo, bio
